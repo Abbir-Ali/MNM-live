@@ -1,0 +1,113 @@
+{% schema %}
+{
+  "name": "Sliding Strip",
+  "settings": [
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Text",
+      "default": "Your Brand Text Here"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "font",
+      "id": "text_font",
+      "label": "Text Font"
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Animation Speed (seconds)",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "text_repetitions",
+      "label": "Text Repetitions",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "font_size_desktop",
+      "label": "Font Size for Desktop (pixels)",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Font Size for Mobile (pixels)",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "default": 12
+    }
+  ],
+  "presets": [{"name":"sliding strip"}]
+}
+{% endschema %}
+
+{% assign text_length = section.settings.logo_text | size %}
+{% assign num_repetitions = section.settings.text_repetitions | plus: 1 %}
+{% assign num_copies = 20 | divided_by: text_length | times: num_repetitions %}
+
+<div class="sliding-strip-container">
+  <div class="sliding-strip" style="--animation-duration: {{ section.settings.animation_speed }}s;">
+    {% for i in (1..num_copies) %}
+      <div
+        class="logo"
+        style="color: {{ section.settings.text_color }}; font-family: {{ section.settings.text_font | default: 'Arial' }};"
+      >
+        {{ section.settings.logo_text }}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  /* CSS styles for the sliding strip */
+  .sliding-strip-container {
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .sliding-strip {
+      display: flex;
+      animation: slide var(--animation-duration) linear infinite;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .logo {
+      margin-right: 20px; /* Adjust spacing between logos/text */
+      white-space: nowrap; /* Prevent text from wrapping */
+      font-size: {{ section.settings.font_size_desktop }}px; /* Set the default font size for desktop */
+  }
+
+  @keyframes slide {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+  }
+
+  @media (max-width: 768px) {
+      .logo {
+          font-size: {{ section.settings.font_size_mobile }}px; /* Reduce font size for smaller screens */
+      }
+  }
+</style>

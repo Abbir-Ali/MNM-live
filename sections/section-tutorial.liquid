@@ -1,0 +1,220 @@
+<h3>This is Heading</h3>
+<h3>{{ section.settings.heading }}</h3>
+<h3>This is Text</h3>
+<p>{{ section.settings.text_setting }}</p>
+<h3>This is Textarea</h3>
+<p>{{ section.settings.textarea_setting | newline_to_br }}</p>
+<h3>This is Richtext</h3>
+<div>{{ section.settings.richtext_setting }}</div>
+<h3>This is Inline Richtext</h3>
+<div>{{ section.settings.inline_richtext_setting }}</div>
+<h3>This is Range</h3>
+<div>{{ section.settings.range_setting }}</div>
+<h3>Select option</h3>
+<div>{{ section.settings.sellect_settings }}</div>
+
+<h3>Checkbox Settings</h3>
+{% if section.settings.checkbox_settings == true %}
+  <p>CheckBox is true</p>
+{% else %}
+  <p>CheckBox is false</p>
+{% endif %}
+
+<h3>Radio Button</h3>
+<p>{{ section.settings.radio_settings }}</p>
+<h3>Color</h3>
+<p style="color:{{section.settings.color_settings}}">{{ section.settings.color_setting }}</p>
+
+<div style="background:{{section.settings.colorbackground_settings}}">
+  <h3>Color Background</h3>
+  <p>{{ section.settings.colorbackground_setting }}</p>
+</div>
+
+{% if section.settings.image_picker_setting %}
+  <h3>Image Picker</h3>
+  {{ section.settings.image_picker_setting | image_url: width: 400 | image_tag }}
+{% endif %}
+
+<div>
+  <h3>Video Player</h3>
+  {{ section.settings.video_setting | video_tag: controls: true, autoplay: true }}
+</div>
+<br>
+<br>
+<br>
+<h2>Product Settings</h2>
+<p>
+  {{ section.settings.product_settings }} | {{ section.settings.product_settings.title }} -
+  {{ section.settings.product_settings.compare_at_price }}
+</p>
+<h2>Product List Settings</h2>
+{% for product in section.settings.product_list_settings %}
+  <p>
+    {{ product }} | {{ product.title }} -
+    {{ product.variants[0].price | money }}
+  </p>
+{% endfor %}
+
+<h2>Collection Settings</h2>
+<p>
+  {{ section.settings.collection_settings }} | {{ section.settings.collection_settings.title }} -
+  {{ section.settings.collection_settings.products.size }}
+</p>
+<h2>Collection List Settings</h2>
+{% for collection in section.settings.collection_list_settings %}
+  <p>
+    {{ collection.handle }} | {{ collection.title }} -
+    {{ collection.products.size }}
+  </p>
+{% endfor %}
+
+{% schema %}
+{
+  "name": "Sections Tutorial",
+  "tag": "section",
+  "class": "section-tutrioal",
+  "limit": 2,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Section Heading",
+      "info": "This is some helper text",
+      "placeholder": "Write Heading Here"
+    },
+    {
+      "type": "text",
+      "id": "text_setting",
+      "label": "Theme Settings",
+      "default": "This is my first text",
+      "info": "This is some helper text",
+      "placeholder": "Write Text Here"
+    },
+    {
+      "type": "textarea",
+      "id": "textarea_setting",
+      "label": "Textarea Settings",
+      "default": "This is my Textarea",
+      "placeholder": "Write Paragrapha Here"
+    },
+    {
+      "type": "richtext",
+      "id": "richtext_setting",
+      "label": "Richtext Settings"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "inline_richtext_setting",
+      "label": "Inline Richtext Settings",
+      "default": "Write Inline Rich Text Here"
+    },
+    {
+      "type": "range",
+      "id": "range_setting",
+      "label": "Range Settings",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "sellect_settings",
+      "label": "Select Settings",
+      "options": [
+        {
+          "label": "Option 1",
+          "value": "option1"
+        },
+        {
+          "label": "Option 2",
+          "value": "option2"
+        },
+        {
+          "label": "Option 3 will be longerthan the others",
+          "value": "option3 will be longerthan the others ",
+          "group": "group-3"
+        },
+        {
+          "label": "Option 4",
+          "value": "option4",
+          "group": "group-4"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "label": "Checkbox Settings",
+      "id": "checkbox_settings",
+      "default": true
+    },
+    {
+      "type": "radio",
+      "id": "radio_settings",
+      "label": "Radio Button Setting",
+      "options": [
+        { "value": "male", "label": "Male" },
+        {
+          "value": "female",
+          "label": "Female"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "label": "Color Setting",
+      "id": "color_setting"
+    },
+    {
+      "type": "color_background",
+      "label": "Color Background Setting",
+      "id": "colorbackground_setting"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_picker_setting",
+      "label": "Image Picker Setting"
+    },
+    {
+      "type": "video",
+      "id": "video_setting",
+      "label": "Video Settings"
+    },
+    {
+      "type": "product",
+      "id": "product_settings",
+      "label": "Product Settings"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list_settings",
+      "label": "Product List Settings",
+      "limit": 2
+    },
+    {
+      "type": "collection",
+      "id": "collection_settings",
+      "label": "Collection Settings"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list_settings",
+      "label": "collection List Settings",
+      "limit": 2
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Section Tutorial",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}

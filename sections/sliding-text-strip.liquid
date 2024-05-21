@@ -1,0 +1,150 @@
+{% schema %}
+{
+  "name": "Sliding Text Strip",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text1",
+      "label": "Text 1",
+      "default": "Your First Text Here"
+    },
+    {
+      "type": "checkbox",
+      "id": "text1_enabled",
+      "label": "Enable Text 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "text2",
+      "label": "Text 2",
+      "default": "Your Second Text Here"
+    },
+    {
+      "type": "checkbox",
+      "id": "text2_enabled",
+      "label": "Enable Text 2",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "additional_text2",
+      "label": "Additional Text 2",
+      "default": "Additional text",
+      "info": "Enter additional texts for Text 2. Separate each text with a comma."
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Animation Speed (seconds)",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "font",
+      "id": "text_font",
+      "label": "Text Font"
+    }
+  ],
+  "presets": [{"name":"sliding_text_strip"}]
+}
+{% endschema %}
+
+<div class="sliding-text-strip">
+  <div class="text-container">
+    {% if section.settings.text1_enabled %}
+      <div
+        class="text text1"
+        style="color: {{ section.settings.text_color }}; font-family: {{ section.settings.text_font | default: 'Arial' }};"
+      >
+        {{ section.settings.text1 }}
+      </div>
+      {% unless section.settings.text2_enabled == false and section.settings.text1_enabled == true -%}
+        {%- if section.settings.text2_enabled %}
+          <div class="separator">|</div>
+        {% endif -%}
+      {%- endunless %}
+    {% endif %}
+    {% if section.settings.text2_enabled %}
+      <div
+        class="text text2-animation"
+        style="color: {{ section.settings.text_color }}; font-family: {{ section.settings.text_font | default: 'Arial' }};"
+      >
+        {{ section.settings.text2 }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var text2Element = document.querySelector('.text.text2-animation');
+    var additionalTexts = '{{ section.settings.additional_text2 }}'.split(',').map(function(item) { return item.trim(); });
+    var animationSpeed = {{ section.settings.animation_speed }} * 1000; // Convert to milliseconds
+    var currentIndex = 0;
+
+    function animateText() {
+      if (additionalTexts.length > 0) {
+        text2Element.innerHTML = additionalTexts[currentIndex];
+        currentIndex = (currentIndex + 1) % additionalTexts.length;
+      }
+    }
+
+    setInterval(animateText, animationSpeed);
+
+    // Clear the additional text interval when leaving the page or section
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'hidden') {
+        clearInterval(interval);
+      }
+    });
+  });
+</script>
+
+<style>
+  /* CSS styles for the sliding text strip */
+  .sliding-text-strip {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .text-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .text {
+    margin-right: 20px 0; /* Adjust spacing between texts */
+  }
+
+  .separator {
+    margin: 0 10px;
+  }
+
+  /* Animation */
+  @keyframes slideIn {
+    0% { opacity: 0; transform: translateY(100%); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .text.text2-animation {
+    animation: slideIn ease-in-out infinite;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .text {
+      margin-right: 10px; /* Reduce spacing between texts for smaller screens */
+      font-size: 14px; /* Adjust font size for smaller screens */
+    }
+  }
+</style>

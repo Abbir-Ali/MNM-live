@@ -1,0 +1,302 @@
+{% comment %}
+  Auto Video Banner Section
+  Description: A section with a video background, text overlay, and customizable card.
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Auto Video Banner",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay video",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "controller",
+      "label": "Enable video controls",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth_desktop",
+      "label": "Full Width (Desktop)",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth_mobile",
+      "label": "Full Width (Mobile)",
+      "default": false
+    },
+    {
+      "type": "video",
+      "id": "video_upload",
+      "label": "Upload Video"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "accept": ["youtube", "vimeo"],
+      "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+      "label": "URL",
+      "info": "Video plays on the page."
+    },
+    {
+      "type": "text",
+      "id": "text_content",
+      "label": "Text Content"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "text_size_desktop",
+      "label": "Text Size (Desktop) (px)",
+      "default": 18,
+      "min": 12,
+      "max": 36,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "label": "Text Size (Mobile) (px)",
+      "default": 14,
+      "min": 10,
+      "max": 24,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "text_position_horizontal",
+      "label": "Text Horizontal Position (%)",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "text_position_vertical",
+      "label": "Text Vertical Position (%)",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 1
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label"
+    },
+    {
+      "type": "range",
+      "id": "card_opacity",
+      "label": "Card Opacity",
+      "default": 0.8,
+      "min": 0,
+      "max": 1,
+      "step": 0.1
+    }
+  ],
+  "presets": [
+    {
+      "name": "Auto Video Banner"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="video-banner {% if section.settings.fullwidth_desktop %}fullwidth-desktop{% endif %} {% if section.settings.fullwidth_mobile %}fullwidth-mobile{% endif %}">
+  {% if section.settings.video_url.type == 'youtube' %}
+    <div class="video-container">
+      <iframe
+        src="https://www.youtube.com/embed/{{ section.settings.video_url.id }}{% if section.settings.autoplay %}?autoplay=1&mute=1&loop=1{% endif %}&modestbranding=1"
+        class="youtube"
+        {% if section.settings.autoplay %}
+          autoplay="autoplay"
+        {% endif -%}
+        {% if section.settings.controller %}
+          controls="controls"
+        {% endif %}
+        frameborder="0"
+        allowfullscreen
+        preload="auto"
+      ></iframe>
+    </div>
+  {% elsif section.settings.video_url.type == 'vimeo' %}
+    <div class="video-container">
+      <video
+        src="https://player.vimeo.com/video/{{ section.settings.video_url.id }}{% if section.settings.autoplay %}?autoplay=1&mute=1&loop=1{% endif %}"
+        class="vimeo"
+        {% if section.settings.autoplay %}
+          autoplay
+        {% endif -%}
+        {% if section.settings.controller %}
+          controls
+        {% endif %}
+        width="100%"
+        height="auto"
+        frameborder="0"
+        webkitallowfullscreen
+        mozallowfullscreen
+        allowfullscreen
+        preload="auto"
+      ></video>
+    </div>
+  {% elsif section.settings.video_upload %}
+    <div class="video-container">
+      {{
+        section.settings.video_upload
+        | video_tag:
+          controls: section.settings.controller,
+          autoplay: section.settings.autoplay,
+          loop: true,
+          width: '100%'
+      }}
+    </div>
+  {% endif %}
+
+  {% if section.settings.text_content %}
+    <div
+      class="text-overlay"
+      style="color: {{ section.settings.text_color }}; font-size: {{ section.settings.text_size_desktop }}px; top: {{ section.settings.text_position_vertical }}%; left: {{ section.settings.text_position_horizontal }}%;"
+    >
+      <p>{{ section.settings.text_content }}</p>
+      {% if section.settings.button_link and section.settings.button_label %}
+        <a href="{{ section.settings.button_link }}" class="banner-button">{{ section.settings.button_label }}</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    {% for block in section.blocks %}
+      {% if block.settings.card_image and block.settings.card_price and block.settings.card_text %}
+        <div
+          class="card-overlay"
+          style="top: {{ block.settings.card_position_vertical }}%; left: {{ block.settings.card_position_horizontal }}%; opacity: {{ block.settings.card_opacity }};"
+        >
+          <img
+            src="{{ block.settings.card_image | image_url: '300x300' }}"
+            alt="Product Image"
+            width="300"
+            height="300"
+          >
+          <p>{{ block.settings.card_price }}</p>
+          <p>{{ block.settings.card_text }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<style>
+      .video-banner {
+        position: relative;
+      }
+
+    .video-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 80vh;
+
+    }
+      .video-container iframe,
+      .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+            object-fit: cover;
+      }
+
+   .text-overlay {
+    position: absolute;
+    background-color: rgba(255, 252, 252, 0.45);
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    font-size: {{ section.settings.text_size_desktop }}px;
+    transform: translate(-50%, -50%);
+  }
+
+  .text-overlay p {
+    margin: 0;
+  }
+
+  .banner-button {
+    display: inline-block;
+    padding: 8px 15px;
+    font-style: normal;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 14px;
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #000000;
+    margin-top: 20px;
+  }
+
+  .card-overlay {
+    position: absolute;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+      .card-overlay img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+      }
+
+      /* Media query for smaller screens */
+      @media screen and (max-width: 550px) {
+        .video-banner.fullwidth-desktop {
+          width: 100%;
+        }
+       .video-container {
+         height:100vh;
+       }
+
+        .video-banner.fullwidth-desktop .video-container,
+        .video-banner.fullwidth-mobile .video-container {
+          width: 100%;
+          height: 95vh;
+        }
+
+        .video-banner .text-overlay {
+          padding: 10px;
+          top: 180px;
+          font-size: {{ section.settings.text_size_mobile }}px;
+        }
+      }
+
+      {% comment %} Apply different text sizes based on device {% endcomment %}
+      {% if request.user_agent.is_mobile %}
+        .text-overlay {
+          font-size: {{ section.settings.text_size_mobile }}px;
+        }
+      {% endif %}
+</style>
